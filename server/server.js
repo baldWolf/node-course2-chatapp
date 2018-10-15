@@ -1,9 +1,9 @@
 // this is the root of the application
-require('./config.js');
+//require('./config.js');
 
 const express = require('express');
 var app = express();
-const port =  process.env.PORT;
+const port =  process.env.PORT || 3000;
 
 const path = require('path');
 const publicPath = path.join(__dirname, '../public' );
