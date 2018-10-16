@@ -16,71 +16,32 @@ var io = socketIO(server);
 const publicPath = path.join(__dirname, '../public' );
 app.use(express.static(publicPath));
 
+const {generateMessage} = require('./utils/message');
+
 // set port number
 // app.listen(port, ()=> {
 //     console.log(`Start port ${port}`);
 // });
 
 io.on('connection', (socket)=> {
-    console.log('new user connected!');
+    console.log('New user connected');
 
-    // socket.emit('newEmail', {
-    //     from: 'example@test.com',
-    //     text: 'This is a greetings.',
-    //     createAt: 123
-    // });
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
 
-    // socket.emit('newMessage', {
-    //     from: 'Attack',
-    //     text: 'See you around',
-    //     createAt: 12341234
-    // });
-
-    socket.on('disconnect', ()=> {
-        console.log('client disconnected');
-    });
-
-    socket.on('createEmail', (newEmail) => {
-        console.log('createEmail', newEmail);
-    });
+    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
     socket.on('createMessage', (message) => {
-        console.log('createMessage', message);
-
-        // emits message to all
-        // io.emit('newMessage', {
-        //     from: message.from,
-        //     text: message.text,
-        //     createAt: new Date().getTime()
+    console.log('createMessage', message);
+    io.emit('newMessage', generateMessage(message.from, message.text));
+        // socket.broadcast.emit('newMessage', {
+        //   from: message.from,
+        //   text: message.text,
+        //   createdAt: new Date().getTime()
         // });
+    });
 
-        socket.emit('newMessage', {
-            from: 'admin',
-            text: 'Welcome to the chat app',
-            createAt: new Date().getTime()
-        });
-
-        // sent event to everybody except myself
-        socket.broadcast.emit('newMessage', {
-            form: 'admin',
-            text: 'New user joined.',
-            createAt: new Date().getTime()
-        })
-
-        // socket.broadcast.emit('createMessage', {
-        //     form: message.from,
-        //     text: message.text,
-        //     createAt: new Date().getTime()
-        // })
-
-        // sender will not see the his/her message sent
-        socket.on('createMessage', (message) => {
-            io.emit('newMessage', {
-                from: message.from,
-                text: message.text,
-                createAt: new Date().getTime()
-            });
-        });
+    socket.on('disconnect', () => {
+        console.log('User was disconnected');
     });
 });
 
