@@ -9,17 +9,6 @@
 
         <!--loads the socket.io library-->
         <script src="/socket.io/socket.io.js"></script>
-        <script>
-            // initiating the request, to open up a web socket
-            var socket = io();
-
-            socket.on('connect', ()=> {
-                console.log('connected to server');
-            });
-
-            socket.on('disconnect', ()=> {
-                console.log('disconnected from server');
-            });
-        </script>
+        <script src="/js/index.js"></script>
     </body>
 </html>
