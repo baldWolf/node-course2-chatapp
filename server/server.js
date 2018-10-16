@@ -48,10 +48,38 @@ io.on('connection', (socket)=> {
         console.log('createMessage', message);
 
         // emits message to all
-        io.emit('newMessage', {
-            from: message.from,
-            text: message.text,
+        // io.emit('newMessage', {
+        //     from: message.from,
+        //     text: message.text,
+        //     createAt: new Date().getTime()
+        // });
+
+        socket.emit('newMessage', {
+            from: 'admin',
+            text: 'Welcome to the chat app',
             createAt: new Date().getTime()
+        });
+
+        // sent event to everybody except myself
+        socket.broadcast.emit('newMessage', {
+            form: 'admin',
+            text: 'New user joined.',
+            createAt: new Date().getTime()
+        })
+
+        // socket.broadcast.emit('createMessage', {
+        //     form: message.from,
+        //     text: message.text,
+        //     createAt: new Date().getTime()
+        // })
+
+        // sender will not see the his/her message sent
+        socket.on('createMessage', (message) => {
+            io.emit('newMessage', {
+                from: message.from,
+                text: message.text,
+                createAt: new Date().getTime()
+            });
         });
     });
 });
