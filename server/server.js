@@ -30,11 +30,11 @@ io.on('connection', (socket)=> {
     //     createAt: 123
     // });
 
-    socket.emit('newMessage', {
-        from: 'Attack',
-        text: 'See you around',
-        createAt: 12341234
-    });
+    // socket.emit('newMessage', {
+    //     from: 'Attack',
+    //     text: 'See you around',
+    //     createAt: 12341234
+    // });
 
     socket.on('disconnect', ()=> {
         console.log('client disconnected');
@@ -46,6 +46,13 @@ io.on('connection', (socket)=> {
 
     socket.on('createMessage', (message) => {
         console.log('createMessage', message);
+
+        // emits message to all
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createAt: new Date().getTime()
+        });
     });
 });
 
