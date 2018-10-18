@@ -3,25 +3,37 @@
 <html>
     <head>
         <meta chartset="utf-8">
+        <link rel="stylesheet" href="/css/styles.css">
     </head>
-    <body>
-        <p>Welcome to the chat app</p>
+    <body class="chat">
+        <!--p>Welcome to the chat app</p-->
 
-        <!--chat message list-->
-        <ol id="messages"></ol>
+        <div class="chat__sidebar">
+            <h3>People</h3>
+            <div id="users"></div>
+        </div>
 
-        <!--send message-->
-        <form id="message-form">
-            <input name="message" type="text" placeholder="Message"/>
-            <button>Send</button>
-        </form>
-
-        <button id="send-location">Send Location</button>
+        <div class="chat__main">
+             <!--chat message list-->
+            <ol id="messages" class="chat__messages"></ol>
+            
+            <div class="chat__footer">
+                <!--send message-->
+                <form id="message-form">
+                    <input name="message" type="text" placeholder="Message" autofocus autocomplete="off"/>
+                    <button>Send</button>
+                </form>
+                <button id="send-location">Send location</button>
+            </div>
+        </div>
 
         <!--loads the socket.io library-->
         <script src="/socket.io/socket.io.js"></script>
         
+        <!--loads the jquery library-->
         <script src="/js/libs/jquery/331/jquery.js"></script>
+        
+        <!--loads the index.js-->>
         <script src="/js/index.js"></script>
     </body>
 </html>
