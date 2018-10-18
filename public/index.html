@@ -10,10 +10,13 @@
         <!--chat message list-->
         <ol id="messages"></ol>
 
+        <!--send message-->
         <form id="message-form">
             <input name="message" type="text" placeholder="Message"/>
             <button>Send</button>
         </form>
+
+        <button id="send-location">Send Location</button>
 
         <!--loads the socket.io library-->
         <script src="/socket.io/socket.io.js"></script>
