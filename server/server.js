@@ -27,7 +27,7 @@ var users = new Users();
 // });
 
 io.on('connection', (socket)=> {
-    console.log('New user connected');
+    //console.log('New user connected');
 
     //socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
     //socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
@@ -48,7 +48,7 @@ io.on('connection', (socket)=> {
         // io.to(string:room).emit
         // socket.broadcast.to(string:room)
         socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
-        socket.broadcast.to(params.room).emit('newMessage', generateMessage( `${params.name}`, 'New user joined'));
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage( 'Admin', 'New user joined'));
         users.addUsers(socket.id, params.name, params.room);
         
         io.to(params.room).emit('updateUserList', users.getUserList(params.room));
@@ -57,16 +57,26 @@ io.on('connection', (socket)=> {
     });
 
     socket.on('createMessage', (message,callback) => {
-        console.log('createMessage', message);
-        io.emit('newMessage', generateMessage(message.from, message.text));
-        callback();
+        //console.log('createMessage', message);
+        
+        var user = users.getUser(socket.id);
+
+        if ( user  && isRealString(message.text)) {
+            //io.emit('newMessage', generateMessage( user.name, message.text));
+            io.to(user.room).emit('newMessage', generateMessage( user.name, message.text));
+            callback();
+        }
     });
 
     socket.on('createLocationMessage', (coords) => {
-        io.emit('newLocationMessage', generateLocationMessage(
-            'Admin', 
-            coords.latitude,
-            coords.longitude));
+        var user = users.getUser(socket.id);
+
+        if ( user ) {
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(
+                `${user.name}`, 
+                coords.latitude,
+                coords.longitude));
+        }
     });
 
     socket.on('disconnect', () => {
