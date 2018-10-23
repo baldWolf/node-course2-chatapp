@@ -8,7 +8,8 @@ const port =  process.env.PORT || 3000;
 const path = require('path');
 const http = require('http');
 const socketIO = require('socket.io');
-
+const {isRealString} = require('./utils/validation.js');
+const {Users} = require('./utils/users');
 var server = http.createServer(app);
 var io = socketIO(server);
 
@@ -18,6 +19,8 @@ app.use(express.static(publicPath));
 
 const {generateMessage, generateLocationMessage} = require('./utils/message');
 
+var users = new Users();
+
 // set port number
 // app.listen(port, ()=> {
 //     console.log(`Start port ${port}`);
@@ -26,9 +29,32 @@ const {generateMessage, generateLocationMessage} = require('./utils/message');
 io.on('connection', (socket)=> {
     console.log('New user connected');
 
-    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+    //socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+    //socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
-    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
+    socket.on('join', (params,callback) => {
+        if(!isRealString(params.name) || !isRealString(params.room)) {
+            return callback('Name and room are required');
+        }
+
+        socket.join(params.room);
+        users.removeUser(socket.id);
+        //socket.leave(string:room);
+        // io.emit - emits message to every connected user
+        // socket.broadcast.emit - emits message to every connected user execpt the current user
+        // socket.emit
+
+        // 
+        // io.to(string:room).emit
+        // socket.broadcast.to(string:room)
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage( `${params.name}`, 'New user joined'));
+        users.addUsers(socket.id, params.name, params.room);
+        
+        io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+        
+        callback();
+    });
 
     socket.on('createMessage', (message,callback) => {
         console.log('createMessage', message);
@@ -44,7 +70,13 @@ io.on('connection', (socket)=> {
     });
 
     socket.on('disconnect', () => {
-        console.log('User was disconnected');
+        //console.log('User was disconnected');
+        var user = users.removeUser(socket.id);
+
+        if(user) {
+            io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+            io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left.`));
+        }
     });
 });
 
