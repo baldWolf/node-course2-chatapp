@@ -1,9 +1,12 @@
 var moment = require('moment');
+var emoji = require('node-emoji')
 
 var generateMessage = (from,message) => {
+    let temp = emoji.emojify(message);
+    console.log('message is ', temp);
     return {
         from: from,
-        text: message,
+        text: emoji.emojify(message),
         createAt: moment().valueOf()
     };
 };

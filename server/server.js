@@ -33,7 +33,7 @@ io.on('connection', (socket)=> {
     //socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'));
 
     socket.on('join', (params,callback) => {
-        if(!isRealString(params.name) || !isRealString(params.room)) {
+        if( !isRealString(params.name) || !isRealString(params.room) ) {
             return callback('Name and room are required');
         }
 
